@@ -1,10 +1,9 @@
 package com.example.chris.umbrella.view.umbrellamain;
 
-import com.example.chris.umbrella.model.WeatherResponse;
-import com.example.chris.umbrella.remote.RemoteDataSource;
+import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.chris.umbrella.model.HourlyWeatherResponse;
+import com.example.chris.umbrella.remote.RemoteDataSource;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -19,7 +18,7 @@ public class UmbrellaMainPresenter implements UmbrellaMainContract.Presenter
 {
     UmbrellaMainContract.View view;
     public static final String TAG = UmbrellaMainPresenter.class.getSimpleName() + "_TAG";
-    List<WeatherResponse> weatherResponses = new ArrayList<>();
+    private HourlyWeatherResponse weatherResponse;
 
     @Override
     public void attachView(UmbrellaMainContract.View view)
@@ -34,40 +33,41 @@ public class UmbrellaMainPresenter implements UmbrellaMainContract.Presenter
     }
 
     @Override
-    public void getBooks()
+    public void getWeather()
     {
-
-        RemoteDataSource.getBookList()
+    
+        Log.d(TAG, "getWeather: ");
+        RemoteDataSource.getWeather()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<List<WeatherResponse>>()
+                .subscribe(new Observer<HourlyWeatherResponse>()
                 {
                     @Override
                     public void onSubscribe(Disposable d)
                     {
-                        view.showProgress("Downloading books...");
+                        view.showProgress("Downloading weather data...");
                     }
 
                     @Override
-                    public void onNext(List<WeatherResponse> weatherResponses)
+                    public void onNext(HourlyWeatherResponse weather)
                     {
-                        weatherResponses.addAll(weatherResponses);
+                        Log.d(TAG, "onNext: "+weather.getResponse().getFeatures().getHourly());
+                        weatherResponse = weather;
                     }
 
                     @Override
                     public void onError(Throwable e)
                     {
                         view.showError(e.toString());
+                        Log.d(TAG, "onError: "+e.toString());
                     }
 
                     @Override
                     public void onComplete()
                     {
-                        view.setBooks(weatherResponses);
-                        view.showProgress("Downloaded all books");
+                        view.setWeatherResponse(weatherResponse);
+                        Log.d(TAG, "onComplete: ");
                     }
                 });
     }
-
-
 }

@@ -6,16 +6,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class Features {
 
-    @SerializedName("conditions")
+    @SerializedName("hourly")
     @Expose
-    private Integer conditions;
+    private Integer hourly;
 
-    public Integer getConditions() {
-        return conditions;
+    public Integer getHourly() {
+        return hourly;
     }
 
-    public void setConditions(Integer conditions) {
-        this.conditions = conditions;
+    public void setHourly(Integer hourly) {
+        this.hourly = hourly;
     }
 
 }

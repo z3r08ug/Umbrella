@@ -1,17 +1,18 @@
 
 package com.example.chris.umbrella.model;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class WeatherResponse {
+public class HourlyWeatherResponse {
 
     @SerializedName("response")
     @Expose
     private Response response;
-    @SerializedName("current_observation")
+    @SerializedName("hourly_forecast")
     @Expose
-    private CurrentObservation currentObservation;
+    private List<HourlyForecast> hourlyForecast = null;
 
     public Response getResponse() {
         return response;
@@ -21,12 +22,12 @@ public class WeatherResponse {
         this.response = response;
     }
 
-    public CurrentObservation getCurrentObservation() {
-        return currentObservation;
+    public List<HourlyForecast> getHourlyForecast() {
+        return hourlyForecast;
     }
 
-    public void setCurrentObservation(CurrentObservation currentObservation) {
-        this.currentObservation = currentObservation;
+    public void setHourlyForecast(List<HourlyForecast> hourlyForecast) {
+        this.hourlyForecast = hourlyForecast;
     }
 
 }

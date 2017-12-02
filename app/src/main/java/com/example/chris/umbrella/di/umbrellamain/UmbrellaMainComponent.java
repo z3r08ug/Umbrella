@@ -14,6 +14,5 @@ import dagger.Component;
 @Singleton
 public interface UmbrellaMainComponent
 {
-
     void inject(UmbrellaMainActivity umbrellaMainActivity);
 }
