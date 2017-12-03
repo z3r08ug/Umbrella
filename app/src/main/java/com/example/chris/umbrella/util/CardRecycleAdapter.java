@@ -9,12 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.chris.umbrella.R;
-import com.example.chris.umbrella.model.Hourly.FCTTIME;
 import com.example.chris.umbrella.model.Hourly.HourlyForecast;
+import com.example.chris.umbrella.view.umbrellamain.ForecastRecycleAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,8 +62,12 @@ public class CardRecycleAdapter extends RecyclerView.Adapter<CardRecycleAdapter.
             {
                 int date = Calendar.getInstance().getTime().getDate();
                 int month = Calendar.getInstance().getTime().getMonth();
-                int year = Calendar.getInstance().getTime().getMonth();
-                Log.d(TAG, "onBindViewHolder: " + year);
+                int year = Calendar.getInstance().getTime().getYear();
+                year += 1900;
+                month++;
+                Log.d(TAG, "onBindViewHolder: date " + date);
+                Log.d(TAG, "onBindViewHolder: month " + month);
+                Log.d(TAG, "onBindViewHolder: year " + year);
                 if (month == 12 && date + 2 > 31)
                 {
                     month = 1;
@@ -76,19 +79,20 @@ public class CardRecycleAdapter extends RecyclerView.Adapter<CardRecycleAdapter.
                 else if (date + 2 > 30 && (month == 9 || month == 4 || month == 6 || month == 11))
                 {
                     month += 1;
-                    date -= 30;
+                    date -= 28;
                     formatDate(month, date, year);
                     holder.tvDay.setText(this.date);
                 }
                 else if (date + 2 > 31)
                 {
                     month += 1;
-                    date -= 31;
+                    date -= 29;
                     formatDate(month, date, year);
                     holder.tvDay.setText(this.date);
                 }
                 else
                 {
+                    date += 2;
                     formatDate(month, date, year);
                     holder.tvDay.setText(this.date);
                 }
@@ -111,40 +115,40 @@ public class CardRecycleAdapter extends RecyclerView.Adapter<CardRecycleAdapter.
         switch (m)
         {
             case 1:
-                date += "January";
+                date += "January ";
                 break;
             case 2:
-                date += "February";
+                date += "February ";
                 break;
             case 3:
-                date += "March";
+                date += "March ";
                 break;
             case 4:
-                date += "April";
+                date += "April ";
                 break;
             case 5:
-                date += "May";
+                date += "May ";
                 break;
             case 6:
-                date += "June";
+                date += "June ";
                 break;
             case 7:
-                date += "July";
+                date += "July ";
                 break;
             case 8:
-                date += "August";
+                date += "August ";
                 break;
             case 9:
-                date += "September";
+                date += "September ";
                 break;
             case 10:
-                date += "October";
+                date += "October ";
                 break;
             case 11:
-                date += "November";
+                date += "November ";
                 break;
             case 12:
-                date += "December";
+                date += "December ";
                 break;
         }
         date += d + ", " + y;

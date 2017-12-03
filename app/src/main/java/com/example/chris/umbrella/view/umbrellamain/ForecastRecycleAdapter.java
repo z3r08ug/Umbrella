@@ -1,6 +1,7 @@
-package com.example.chris.umbrella.util;
+package com.example.chris.umbrella.view.umbrellamain;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.chris.umbrella.R;
 import com.example.chris.umbrella.model.Hourly.FCTTIME;
 import com.example.chris.umbrella.model.Hourly.HourlyForecast;
 
@@ -30,15 +30,17 @@ public class ForecastRecycleAdapter extends RecyclerView.Adapter<ForecastRecycle
     private int high;
     private int low;
     private boolean tint;
+    private String unit;
+    private SharedPreferences sharedPreferences;
     
     public ForecastRecycleAdapter(List<HourlyForecast> hourlyForecasts)
     {
         this.hourlyForecasts = hourlyForecasts;
-    
+        
         high = 0;
         low = 0;
         tint = true;
-    
+        
         //loop through list of forecasts and determine high and low temps
         for (HourlyForecast forecast : hourlyForecasts)
         {
@@ -46,7 +48,7 @@ public class ForecastRecycleAdapter extends RecyclerView.Adapter<ForecastRecycle
             {
                 high = hourlyForecasts.lastIndexOf(forecast);
             }
-    
+            
             if (Integer.parseInt(forecast.getTemp().getEnglish()) < Double.parseDouble(hourlyForecasts.get(low).getTemp().getEnglish()))
             {
                 low = hourlyForecasts.lastIndexOf(forecast);
@@ -57,16 +59,18 @@ public class ForecastRecycleAdapter extends RecyclerView.Adapter<ForecastRecycle
         if (low == high)
             tint = false;
     }
-
+    
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(layout.weather_item, null);
         context = parent.getContext();
+        sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        unit = sharedPreferences.getString("units", "Fahrenheit");
         return new ViewHolder(view);
     }
-
+    
     @Override
     public void onBindViewHolder(ForecastRecycleAdapter.ViewHolder holder, int position)
     {
@@ -111,11 +115,14 @@ public class ForecastRecycleAdapter extends RecyclerView.Adapter<ForecastRecycle
                 holder.ivCondition.setColorFilter(context.getResources().getColor(color.weather_cool));
             }
             holder.tvTime.setText(time);
-            holder.tvTemp.setText(forecast.getTemp().getEnglish());
+            if (unit.equals("Fahrenheit"))
+                holder.tvTemp.setText(forecast.getTemp().getEnglish() + "°");
+            else
+                holder.tvTemp.setText(forecast.getTemp().getMetric() + "°");
             
             setConditionImage(holder, forecast);
-    
-    
+            
+            
         }
     }
     
@@ -165,7 +172,7 @@ public class ForecastRecycleAdapter extends RecyclerView.Adapter<ForecastRecycle
     {
         return hourlyForecasts.size();
     }
-
+    
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         private final TextView tvTemp;

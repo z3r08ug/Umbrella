@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +22,7 @@ public class SettingsActivity extends AppCompatActivity
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private boolean validZip;
-    private String zip;
+    private String zip, origZip;
     private TextView tvUnits;
     private TextView tvZip;
     
@@ -33,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity
     
         sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
+        origZip = sharedPreferences.getString("zip", "");
         validZip = false;
     
         tvZip = findViewById(R.id.tvZip);
@@ -46,14 +48,14 @@ public class SettingsActivity extends AppCompatActivity
     {
         if (!validZip)
         {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
             final EditText edittext = new EditText(this);
             edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
-            alert.setMessage("Enter Zipcode");
-            alert.setTitle("Enter Zipcode");
+            builder.setMessage("Enter Zipcode");
+            builder.setTitle("Enter Zipcode");
         
-            alert.setView(edittext);
-            alert.setPositiveButton("Accept", new DialogInterface.OnClickListener()
+            builder.setView(edittext);
+            builder.setPositiveButton("Accept", new DialogInterface.OnClickListener()
             {
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
@@ -84,24 +86,70 @@ public class SettingsActivity extends AppCompatActivity
                         Toast.makeText(SettingsActivity.this, "Zipcode must only contain numbers.", Toast.LENGTH_SHORT).show();
                         requestZip(view);
                     }
+                    dialog.dismiss();
                 }
             });
         
-            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
             {
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
-                    Toast.makeText(SettingsActivity.this, "Valid zipcode must be entered.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Zipcode was unchanged.", Toast.LENGTH_SHORT).show();
+                    validZip = true;
+                    zip = origZip;
                     requestZip(view);
+                    dialog.dismiss();
                 }
             });
-        
-            alert.show();
+            
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+        else
+        {
+            tvZip.setText(zip);
+            validZip = false;
         }
     }
     
     public void requestUnits(final View view)
     {
-    
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setTitle("Select unit for degrees");
+        builder.setItems(R.array.units, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                switch (which)
+                {
+                    case 0:
+                    {
+                        editor.putString("units", "Fahrenheit");
+                        boolean isSaved = editor.commit();
+                        if (isSaved)
+                        {
+                            Toast.makeText(SettingsActivity.this, "Saved units", Toast.LENGTH_SHORT).show();
+                            tvUnits.setText("Fahrenheit");
+                        }
+                        break;
+                    }
+                    case 1:
+                    {
+                        editor.putString("units", "Celsius");
+                        boolean isSaved = editor.commit();
+                        if (isSaved)
+                        {
+                            Toast.makeText(SettingsActivity.this, "Saved units", Toast.LENGTH_SHORT).show();
+                            tvUnits.setText("Celsius");
+                        }
+                        break;
+                    }
+                }
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

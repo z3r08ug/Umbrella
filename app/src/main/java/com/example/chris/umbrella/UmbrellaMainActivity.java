@@ -101,7 +101,7 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
         super.onResume();
         sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-    
+        
         zip = sharedPreferences.getString("zip", "");
         initWeatherData();
         requestZip();
@@ -116,7 +116,7 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
             edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
             alert.setMessage("Enter Zipcode");
             alert.setTitle("Enter Zipcode");
-        
+            
             alert.setView(edittext);
             alert.setPositiveButton("Accept", new DialogInterface.OnClickListener()
             {
@@ -151,7 +151,7 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
                     }
                 }
             });
-        
+            
             alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
             {
                 public void onClick(DialogInterface dialog, int whichButton)
@@ -160,12 +160,12 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
                     requestZip();
                 }
             });
-        
+            
             alert.show();
         }
         else
             validZip = true;
-    
+        
         if (validZip)
         {
             presenter.getHourlyWeather(zip);
@@ -244,7 +244,10 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     {
         currentWeather = weatherResponse;
         
-        tvCurrentTemp.setText(currentWeather.getCurrentObservation().getTempF() + "°");
+        if (sharedPreferences.getString("units", "Fahrenheit").equals("Fahrenheit"))
+            tvCurrentTemp.setText(currentWeather.getCurrentObservation().getTempF() + "°");
+        else
+            tvCurrentTemp.setText(currentWeather.getCurrentObservation().getTempC() + "°");
         tvCurrentCondition.setText(currentWeather.getCurrentObservation().getWeather());
         displayLocation = currentWeather.getCurrentObservation().getDisplayLocation();
         getSupportActionBar().setTitle(displayLocation.getCity() + ", " + displayLocation.getState());
