@@ -1,5 +1,6 @@
 package com.example.chris.umbrella;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +40,6 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     private TextView tvCurrentCondition;
     private TextView tvCurrentTemp;
     private SharedPreferences mSettings;
-    private android.support.v7.widget.Toolbar toolbar;
     private DisplayLocation displayLocation;
     private AppBarLayout appBarLayout;
     
@@ -52,7 +53,6 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
         
         tvCurrentTemp = findViewById(R.id.tvCurrentTemp);
         tvCurrentCondition = findViewById(R.id.tvCurrentCondition);
-        toolbar = findViewById(R.id.toolbar);
     
         appBarLayout = findViewById(R.id.appbar);
         
@@ -95,6 +95,15 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     public void setHourlyWeather(HourlyWeatherResponse weatherResponse)
     {
         hourlyForecasts = weatherResponse.getHourlyForecast();
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        return false;
     }
     
     @Override
