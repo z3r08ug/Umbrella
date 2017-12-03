@@ -1,5 +1,6 @@
 package com.example.chris.umbrella;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -8,6 +9,10 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,11 +24,16 @@ import android.widget.Toolbar;
 import com.example.chris.umbrella.di.umbrellamain.DaggerUmbrellaMainComponent;
 import com.example.chris.umbrella.model.Current.DisplayLocation;
 import com.example.chris.umbrella.model.Current.WeatherResponse;
+import com.example.chris.umbrella.model.Hourly.FCTTIME;
 import com.example.chris.umbrella.model.Hourly.HourlyForecast;
 import com.example.chris.umbrella.model.Hourly.HourlyWeatherResponse;
+import com.example.chris.umbrella.util.CardRecycleAdapter;
+import com.example.chris.umbrella.util.ForecastRecycleAdapter;
 import com.example.chris.umbrella.view.umbrellamain.UmbrellaMainContract;
 import com.example.chris.umbrella.view.umbrellamain.UmbrellaMainPresenter;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,6 +52,11 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     private SharedPreferences mSettings;
     private DisplayLocation displayLocation;
     private AppBarLayout appBarLayout;
+    private List<List<HourlyForecast>> cards;
+    private List<HourlyForecast> today;
+    private List<HourlyForecast> tomorrow;
+    private List<HourlyForecast> dayAfter;
+    private RecyclerView rvCards;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,11 +68,15 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
         
         tvCurrentTemp = findViewById(R.id.tvCurrentTemp);
         tvCurrentCondition = findViewById(R.id.tvCurrentCondition);
-    
+        rvCards = findViewById(R.id.rvCards);
+        
         appBarLayout = findViewById(R.id.appbar);
+        cards = new ArrayList<>();
+        today = new ArrayList<>();
+        tomorrow = new ArrayList<>();
+        dayAfter = new ArrayList<>();
         
-        
-        zip = "07065";
+        zip = "30080";
         presenter.attachView(this);
     }
     
@@ -95,6 +114,43 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     public void setHourlyWeather(HourlyWeatherResponse weatherResponse)
     {
         hourlyForecasts = weatherResponse.getHourlyForecast();
+        
+        divideIntoCards();
+        
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+        
+        rvCards.setLayoutManager(layoutManager);
+        rvCards.setItemAnimator(itemAnimator);
+        
+        CardRecycleAdapter recyclerAdapter = new CardRecycleAdapter(cards);
+        rvCards.setAdapter(recyclerAdapter);
+    }
+    
+    private void divideIntoCards()
+    {
+        int date = Calendar.getInstance().getTime().getDate();
+        for (HourlyForecast forecast : hourlyForecasts)
+        {
+            int fDate = Integer.parseInt(forecast.getFCTTIME().getMday());
+            if (date == fDate)
+                today.add(forecast);
+            else if (date + 1 == fDate)
+            {
+                tomorrow.add(forecast);
+            }
+            else
+                dayAfter.add(forecast);
+        }
+        cards.add(today);
+        cards.add(tomorrow);
+        if (dayAfter.size() != 0)
+        {
+            cards.add(dayAfter);
+            Log.d(TAG, "divideIntoCards: Day After" +cards.get(2));
+        }
+        Log.d(TAG, "divideIntoCards: Today" +cards.get(0));
+        Log.d(TAG, "divideIntoCards: Tomorrow" +cards.get(1));
     }
     
     @Override
@@ -110,12 +166,12 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     public void setCurrentWeather(WeatherResponse weatherResponse)
     {
         currentWeather = weatherResponse;
-    
+        
         tvCurrentTemp.setText(currentWeather.getCurrentObservation().getTempF() + "°");
         tvCurrentCondition.setText(currentWeather.getCurrentObservation().getWeather());
         displayLocation = currentWeather.getCurrentObservation().getDisplayLocation();
         getSupportActionBar().setTitle(displayLocation.getCity() + ", " + displayLocation.getState());
-    
+        
         if (Double.valueOf(currentWeather.getCurrentObservation().getTempF()) >= 60.0)
         {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.weather_warm)));
