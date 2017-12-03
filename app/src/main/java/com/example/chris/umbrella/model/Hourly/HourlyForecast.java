@@ -1,5 +1,5 @@
 
-package com.example.chris.umbrella.model;
+package com.example.chris.umbrella.model.Hourly;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -226,5 +226,13 @@ public class HourlyForecast {
     public void setMslp(Mslp mslp) {
         this.mslp = mslp;
     }
-
+    
+    @Override
+    public String toString()
+    {
+        return "HourlyForecast{" +
+                "fCTTIME=" + fCTTIME +
+                ", condition='" + condition + '\'' +
+                '}';
+    }
 }

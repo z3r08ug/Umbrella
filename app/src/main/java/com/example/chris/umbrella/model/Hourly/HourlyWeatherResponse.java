@@ -1,5 +1,5 @@
 
-package com.example.chris.umbrella.model;
+package com.example.chris.umbrella.model.Hourly;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
@@ -29,5 +29,13 @@ public class HourlyWeatherResponse {
     public void setHourlyForecast(List<HourlyForecast> hourlyForecast) {
         this.hourlyForecast = hourlyForecast;
     }
-
+    
+    @Override
+    public String toString()
+    {
+        return "HourlyWeatherResponse{" +
+                "response=" + response +
+                ", hourlyForecast=" + hourlyForecast +
+                '}';
+    }
 }

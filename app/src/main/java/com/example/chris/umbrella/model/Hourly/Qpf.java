@@ -1,10 +1,10 @@
 
-package com.example.chris.umbrella.model;
+package com.example.chris.umbrella.model.Hourly;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Mslp {
+public class Qpf {
 
     @SerializedName("english")
     @Expose

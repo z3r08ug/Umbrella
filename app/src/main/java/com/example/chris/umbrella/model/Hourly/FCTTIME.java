@@ -1,5 +1,5 @@
 
-package com.example.chris.umbrella.model;
+package com.example.chris.umbrella.model.Hourly;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -281,5 +281,17 @@ public class FCTTIME {
     public void setAge(String age) {
         this.age = age;
     }
-
+    
+    @Override
+    public String toString()
+    {
+        return "FCTTIME{" +
+                "hour='" + hour + '\'' +
+                ", min='" + min + '\'' +
+                ", sec='" + sec + '\'' +
+                ", year='" + year + '\'' +
+                ", mon='" + mon + '\'' +
+                ", mday='" + mday + '\'' +
+                '}';
+    }
 }
