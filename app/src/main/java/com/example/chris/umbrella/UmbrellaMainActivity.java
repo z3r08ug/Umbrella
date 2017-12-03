@@ -48,7 +48,6 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     private WeatherResponse currentWeather;
     private TextView tvCurrentCondition;
     private TextView tvCurrentTemp;
-    private SharedPreferences mSettings;
     private DisplayLocation displayLocation;
     private AppBarLayout appBarLayout;
     private List<List<HourlyForecast>> cards;
@@ -57,6 +56,8 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     private List<HourlyForecast> dayAfter;
     private RecyclerView rvCards;
     private boolean validZip;
+    private SharedPreferences.Editor editor;
+    private SharedPreferences sharedPreferences;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -71,15 +72,20 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
         rvCards = findViewById(R.id.rvCards);
         
         appBarLayout = findViewById(R.id.appbar);
+        initWeatherData();
+        
+        presenter.attachView(this);
+        
+        
+    }
+    
+    private void initWeatherData()
+    {
         cards = new ArrayList<>();
         today = new ArrayList<>();
         tomorrow = new ArrayList<>();
         dayAfter = new ArrayList<>();
         validZip = false;
-        
-        presenter.attachView(this);
-        
-        
     }
     
     @Override
@@ -93,15 +99,15 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     protected void onResume()
     {
         super.onResume();
-        SharedPreferences sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sharedPreferences.edit();
+        sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
     
         zip = sharedPreferences.getString("zip", "");
-        
-        requestZip(editor);
+        initWeatherData();
+        requestZip();
     }
     
-    private void requestZip(final SharedPreferences.Editor editor)
+    private void requestZip()
     {
         if (zip.equals(""))
         {
@@ -130,18 +136,18 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
                         {
                             validZip = true;
                             Toast.makeText(UmbrellaMainActivity.this, "Saved zipcode", Toast.LENGTH_SHORT).show();
-                            requestZip(editor);
+                            requestZip();
                         }
                     }
                     catch (ZipcodeNotRecognizedException e)
                     {
                         Toast.makeText(UmbrellaMainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                        requestZip(editor);
+                        requestZip();
                     }
                     catch (NumberFormatException e)
                     {
                         Toast.makeText(UmbrellaMainActivity.this, "Zipcode must only contain numbers.", Toast.LENGTH_SHORT).show();
-                        requestZip(editor);
+                        requestZip();
                     }
                 }
             });
@@ -151,7 +157,7 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
                     Toast.makeText(UmbrellaMainActivity.this, "Valid zipcode must be entered.", Toast.LENGTH_SHORT).show();
-                    requestZip(editor);
+                    requestZip();
                 }
             });
         
