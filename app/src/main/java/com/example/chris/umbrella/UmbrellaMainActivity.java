@@ -1,34 +1,33 @@
 package com.example.chris.umbrella;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.example.chris.umbrella.di.umbrellamain.DaggerUmbrellaMainComponent;
+import com.example.chris.umbrella.exceptions.ZipcodeNotRecognizedException;
 import com.example.chris.umbrella.model.Current.DisplayLocation;
 import com.example.chris.umbrella.model.Current.WeatherResponse;
-import com.example.chris.umbrella.model.Hourly.FCTTIME;
 import com.example.chris.umbrella.model.Hourly.HourlyForecast;
 import com.example.chris.umbrella.model.Hourly.HourlyWeatherResponse;
 import com.example.chris.umbrella.util.CardRecycleAdapter;
-import com.example.chris.umbrella.util.ForecastRecycleAdapter;
 import com.example.chris.umbrella.view.umbrellamain.UmbrellaMainContract;
 import com.example.chris.umbrella.view.umbrellamain.UmbrellaMainPresenter;
 
@@ -57,6 +56,7 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     private List<HourlyForecast> tomorrow;
     private List<HourlyForecast> dayAfter;
     private RecyclerView rvCards;
+    private boolean validZip;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -75,9 +75,11 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
         today = new ArrayList<>();
         tomorrow = new ArrayList<>();
         dayAfter = new ArrayList<>();
+        validZip = false;
         
-        zip = "30080";
         presenter.attachView(this);
+        
+        
     }
     
     @Override
@@ -91,9 +93,78 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     protected void onResume()
     {
         super.onResume();
+        SharedPreferences sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+    
+        zip = sharedPreferences.getString("zip", "");
         
-        presenter.getHourlyWeather(zip);
-        presenter.getCurrentWeather(zip);
+        requestZip(editor);
+    }
+    
+    private void requestZip(final SharedPreferences.Editor editor)
+    {
+        if (zip.equals(""))
+        {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            final EditText edittext = new EditText(this);
+            edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
+            alert.setMessage("Enter Zipcode");
+            alert.setTitle("Enter Zipcode");
+        
+            alert.setView(edittext);
+            alert.setPositiveButton("Accept", new DialogInterface.OnClickListener()
+            {
+                public void onClick(DialogInterface dialog, int whichButton)
+                {
+                    zip = edittext.getText().toString();
+                    try
+                    {
+                        //check to make sure zip is 5 digits
+                        if (zip.length() != 5)
+                            throw new ZipcodeNotRecognizedException();
+                        //check to make sure zip is only numbers
+                        Integer.parseInt(zip);
+                        editor.putString("zip", zip);
+                        boolean isSaved = editor.commit();
+                        if (isSaved)
+                        {
+                            validZip = true;
+                            Toast.makeText(UmbrellaMainActivity.this, "Saved zipcode", Toast.LENGTH_SHORT).show();
+                            requestZip(editor);
+                        }
+                    }
+                    catch (ZipcodeNotRecognizedException e)
+                    {
+                        Toast.makeText(UmbrellaMainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                        requestZip(editor);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        Toast.makeText(UmbrellaMainActivity.this, "Zipcode must only contain numbers.", Toast.LENGTH_SHORT).show();
+                        requestZip(editor);
+                    }
+                }
+            });
+        
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+            {
+                public void onClick(DialogInterface dialog, int whichButton)
+                {
+                    Toast.makeText(UmbrellaMainActivity.this, "Valid zipcode must be entered.", Toast.LENGTH_SHORT).show();
+                    requestZip(editor);
+                }
+            });
+        
+            alert.show();
+        }
+        else
+            validZip = true;
+    
+        if (validZip)
+        {
+            presenter.getHourlyWeather(zip);
+            presenter.getCurrentWeather(zip);
+        }
     }
     
     @Override

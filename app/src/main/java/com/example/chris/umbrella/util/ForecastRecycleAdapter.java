@@ -75,7 +75,7 @@ public class ForecastRecycleAdapter extends RecyclerView.Adapter<ForecastRecycle
         {
             FCTTIME fcttime = forecast.getFCTTIME();
             int hour = Integer.parseInt(fcttime.getHour());
-            String timeOfDay;
+            String timeOfDay = "";
             if (hour > 12)
             {
                 hour -= 12;
@@ -84,6 +84,11 @@ public class ForecastRecycleAdapter extends RecyclerView.Adapter<ForecastRecycle
             else if (hour == 12)
             {
                 timeOfDay = " PM";
+            }
+            else if (hour == 0)
+            {
+                hour = 12;
+                timeOfDay = " AM";
             }
             else
             {
