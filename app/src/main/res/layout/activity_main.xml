@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
@@ -16,24 +17,23 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginStart="0dp"
+            app:titleTextColor="@android:color/white"
             android:layout_marginTop="0dp">
 
         </android.support.v7.widget.Toolbar>
 
         <TextView
-            android:id="@+id/currentTemp"
+            android:id="@+id/tvCurrentTemp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
             android:textColor="#ffffff"
-            android:textSize="48sp" />
+            android:textSize="65sp" />
 
         <TextView
-            android:id="@+id/currentCondition"
+            android:id="@+id/tvCurrentCondition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
             android:textColor="#ffffff"
             android:textSize="24sp" />
@@ -49,4 +49,4 @@
         />
 
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>
