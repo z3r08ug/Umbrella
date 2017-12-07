@@ -16,6 +16,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RemoteDataSource
 {
     
+    public RemoteDataSource(String baseURL, String apiKey)
+    {
+        
+    }
+    
     public static Retrofit create()
     {
         Retrofit retrofit = new Retrofit.Builder()
