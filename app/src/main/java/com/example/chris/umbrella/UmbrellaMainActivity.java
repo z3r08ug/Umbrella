@@ -64,6 +64,8 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        WeatherApplication.get(this).getHomeComponent().inject(this);
         
         DaggerUmbrellaMainComponent.create().inject(this);
         
@@ -77,6 +79,19 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
         presenter.attachView(this);
         
         
+    }
+    
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+    }
+    
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+//        WeatherApplication.get(this).clearHomeComponent();
     }
     
     private void initWeatherData()
