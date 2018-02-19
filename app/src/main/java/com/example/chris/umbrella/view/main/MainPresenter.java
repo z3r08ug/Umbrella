@@ -1,4 +1,4 @@
-package com.example.chris.umbrella.view.umbrellamain;
+package com.example.chris.umbrella.view.main;
 
 import android.util.Log;
 
@@ -18,17 +18,17 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Admin on 11/29/2017.
  */
 
-public class UmbrellaMainPresenter implements UmbrellaMainContract.Presenter
+public class MainPresenter implements MainContract.Presenter
 {
-    UmbrellaMainContract.View view;
-    public static final String TAG = UmbrellaMainPresenter.class.getSimpleName() + "_TAG";
+    MainContract.View view;
+    public static final String TAG = MainPresenter.class.getSimpleName() + "_TAG";
     private HourlyWeatherResponse weatherResponse;
     private WeatherResponse currentWeather;
     private List<HourlyForecast> forecasts;
     
     
     @Override
-    public void attachView(UmbrellaMainContract.View view)
+    public void attachView(MainContract.View view)
     {
         this.view = view;
     }
@@ -36,7 +36,7 @@ public class UmbrellaMainPresenter implements UmbrellaMainContract.Presenter
     @Override
     public void detachView()
     {
-
+        this.view = null;
     }
 
     @Override
@@ -72,8 +72,8 @@ public class UmbrellaMainPresenter implements UmbrellaMainContract.Presenter
                     @Override
                     public void onComplete()
                     {
+                        view.showProgress("Download complete......");
                         view.setHourlyWeather(weatherResponse);
-                        Log.d(TAG, "onComplete: ");
                     }
                 });
     }

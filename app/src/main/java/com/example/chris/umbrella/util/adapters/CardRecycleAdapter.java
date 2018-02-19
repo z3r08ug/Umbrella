@@ -1,4 +1,4 @@
-package com.example.chris.umbrella.util;
+package com.example.chris.umbrella.util.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.example.chris.umbrella.R;
 import com.example.chris.umbrella.model.Hourly.HourlyForecast;
-import com.example.chris.umbrella.view.umbrellamain.ForecastRecycleAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;

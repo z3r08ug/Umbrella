@@ -1,8 +1,7 @@
-package com.example.chris.umbrella;
+package com.example.chris.umbrella.view.settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +9,10 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.chris.umbrella.R;
 import com.example.chris.umbrella.exceptions.ZipcodeNotRecognizedException;
 
 public class SettingsActivity extends AppCompatActivity
@@ -65,15 +64,18 @@ public class SettingsActivity extends AppCompatActivity
                         //check to make sure zip is 5 digits
                         if (zip.length() != 5)
                             throw new ZipcodeNotRecognizedException();
-                        //check to make sure zip is only numbers
-                        Integer.parseInt(zip);
-                        editor.putString("zip", zip);
-                        boolean isSaved = editor.commit();
-                        if (isSaved)
+                        else
                         {
-                            validZip = true;
-                            Toast.makeText(SettingsActivity.this, "Saved zipcode", Toast.LENGTH_SHORT).show();
-                            requestZip(view);
+                            //check to make sure zip is only numbers
+                            Integer.parseInt(zip);
+                            editor.putString("zip", zip);
+                            boolean isSaved = editor.commit();
+                            if (isSaved)
+                            {
+                                validZip = true;
+                                Toast.makeText(SettingsActivity.this, "Saved zipcode", Toast.LENGTH_SHORT).show();
+                                requestZip(view);
+                            }
                         }
                     }
                     catch (ZipcodeNotRecognizedException e)

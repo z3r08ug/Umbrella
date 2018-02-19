@@ -1,4 +1,4 @@
-package com.example.chris.umbrella.view.umbrellamain;
+package com.example.chris.umbrella.view.main;
 
 import com.example.chris.umbrella.model.Current.WeatherResponse;
 import com.example.chris.umbrella.model.Hourly.HourlyWeatherResponse;
@@ -10,7 +10,7 @@ import com.example.chris.umbrella.util.BaseView;
  * Created by Admin on 11/29/2017.
  */
 
-public interface UmbrellaMainContract
+public interface MainContract
 {
     //methods for main activity
     interface View extends BaseView

@@ -1,4 +1,4 @@
-package com.example.chris.umbrella.view.umbrellamain;
+package com.example.chris.umbrella.util.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;

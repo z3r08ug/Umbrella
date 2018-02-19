@@ -1,4 +1,4 @@
-package com.example.chris.umbrella.di.umbrellamain;
+package com.example.chris.umbrella.di.app;
 
 import com.example.chris.umbrella.remote.RemoteDataSource;
 
@@ -15,15 +15,14 @@ public class AppModule
     
     String apiKey;
     
-    public AppModule(String baseURL, String apiKey)
+    public AppModule(String baseURL)
     {
         this.BaseURL = baseURL;
-        this.apiKey = apiKey;
     }
     
     @Provides
     RemoteDataSource providesRemoteDataSource()
     {
-        return new RemoteDataSource(BaseURL, apiKey);
+        return new RemoteDataSource();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.chris.umbrella;
+package com.example.chris.umbrella.view.main;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,15 +21,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chris.umbrella.di.umbrellamain.DaggerUmbrellaMainComponent;
+import com.example.chris.umbrella.R;
+import com.example.chris.umbrella.application.WeatherApplication;
 import com.example.chris.umbrella.exceptions.ZipcodeNotRecognizedException;
 import com.example.chris.umbrella.model.Current.DisplayLocation;
 import com.example.chris.umbrella.model.Current.WeatherResponse;
 import com.example.chris.umbrella.model.Hourly.HourlyForecast;
 import com.example.chris.umbrella.model.Hourly.HourlyWeatherResponse;
-import com.example.chris.umbrella.util.CardRecycleAdapter;
-import com.example.chris.umbrella.view.umbrellamain.UmbrellaMainContract;
-import com.example.chris.umbrella.view.umbrellamain.UmbrellaMainPresenter;
+import com.example.chris.umbrella.util.adapters.CardRecycleAdapter;
+import com.example.chris.umbrella.view.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,12 +37,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaMainContract.View
+public class MainActivity extends AppCompatActivity implements MainContract.View
 {
-    private static final String TAG = UmbrellaMainActivity.class.getSimpleName() + "_TAG";
+    private static final String TAG = MainActivity.class.getSimpleName() + "_TAG";
     
     @Inject
-    UmbrellaMainPresenter presenter;
+    MainPresenter presenter;
     private String zip;
     private List<HourlyForecast> hourlyForecasts;
     private WeatherResponse currentWeather;
@@ -64,10 +64,8 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        WeatherApplication.get(this).getHomeComponent().inject(this);
         
-        DaggerUmbrellaMainComponent.create().inject(this);
+        WeatherApplication.get(this).getMainComponent().inject(this);
         
         tvCurrentTemp = findViewById(R.id.tvCurrentTemp);
         tvCurrentCondition = findViewById(R.id.tvCurrentCondition);
@@ -91,7 +89,7 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     protected void onStop()
     {
         super.onStop();
-//        WeatherApplication.get(this).clearHomeComponent();
+        WeatherApplication.get(this).clearMainComponent();
     }
     
     private void initWeatherData()
@@ -150,18 +148,18 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
                         if (isSaved)
                         {
                             validZip = true;
-                            Toast.makeText(UmbrellaMainActivity.this, "Saved zipcode", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Saved zipcode", Toast.LENGTH_SHORT).show();
                             requestZip();
                         }
                     }
                     catch (ZipcodeNotRecognizedException e)
                     {
-                        Toast.makeText(UmbrellaMainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                         requestZip();
                     }
                     catch (NumberFormatException e)
                     {
-                        Toast.makeText(UmbrellaMainActivity.this, "Zipcode must only contain numbers.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Zipcode must only contain numbers.", Toast.LENGTH_SHORT).show();
                         requestZip();
                     }
                 }
@@ -171,7 +169,7 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
             {
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
-                    Toast.makeText(UmbrellaMainActivity.this, "Valid zipcode must be entered.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Valid zipcode must be entered.", Toast.LENGTH_SHORT).show();
                     requestZip();
                 }
             });
@@ -257,10 +255,11 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
     @Override
     public void setCurrentWeather(WeatherResponse weatherResponse)
     {
+        Log.d(TAG, "setCurrentWeather: "+weatherResponse);
         currentWeather = weatherResponse;
         
         if (sharedPreferences.getString("units", "Fahrenheit").equals("Fahrenheit"))
-            tvCurrentTemp.setText(currentWeather.getCurrentObservation().getTempF() + "°");
+            tvCurrentTemp.setText(new StringBuilder().append(currentWeather.getCurrentObservation().getTempF()).append("°").toString());
         else
             tvCurrentTemp.setText(currentWeather.getCurrentObservation().getTempC() + "°");
         tvCurrentCondition.setText(currentWeather.getCurrentObservation().getWeather());
@@ -269,19 +268,19 @@ public class UmbrellaMainActivity extends AppCompatActivity implements UmbrellaM
         
         if (Double.valueOf(currentWeather.getCurrentObservation().getTempF()) >= 60.0)
         {
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.weather_warm)));
-            appBarLayout.setBackgroundColor(ContextCompat.getColor(this,R.color.weather_warm));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.weather_warm)));
+            appBarLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.weather_warm));
         }
         else
         {
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.weather_cool)));
-            appBarLayout.setBackgroundColor(ContextCompat.getColor(this,R.color.weather_cool));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.weather_cool)));
+            appBarLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.weather_cool));
         }
     }
     
     @Override
     public void showProgress(String progress)
     {
-    
+        Toast.makeText(this, progress, Toast.LENGTH_SHORT).show();
     }
 }
